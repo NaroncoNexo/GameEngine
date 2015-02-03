@@ -32,6 +32,7 @@ public:
 
     virtual ITimer *GetTimer() const = 0;
     virtual IInputDevice *GetInputDevice() const = 0;
+    virtual IDisplay *GetDisplay() const = 0;
 	virtual IRenderContext *GetRenderContext() const = 0;
 	virtual IRenderDevice *GetRenderDevice() const = 0;
 };

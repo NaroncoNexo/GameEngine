@@ -11,6 +11,7 @@
 #include "OGL3VertexArray.h"
 #include "OGL3ShaderProgram.h"
 #include "OGL3Texture.h"
+#include "OGL3Viewport.h"
 #include <OpenGL/gl3.h>
 #include <functional>
 
@@ -30,13 +31,32 @@ void COGL3RenderDevice::Release()
 {
 }
 
+IViewport *COGL3RenderDevice::CreateViewport(int x, int y, int width, int height)
+{
+    return new COGL3Viewport(x, y, width, height);
+}
+
+void COGL3RenderDevice::ReleaseViewport(IViewport *viewport)
+{
+    delete ((COGL3Viewport *)viewport);
+}
+
 void COGL3RenderDevice::BeginFrame()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void COGL3RenderDevice::EndFrame()
 {
+}
+
+void COGL3RenderDevice::Clear(int buffers)
+{
+    int GLBuffers = 0;
+    GLBuffers |= (buffers & eCLEAR_COLOR) ? GL_COLOR_BUFFER_BIT : 0;
+    GLBuffers |= (buffers & eCLEAR_DEPTH) ? GL_DEPTH_BUFFER_BIT : 0;
+    GLBuffers |= (buffers & eCLEAR_STENCIL) ? GL_STENCIL_BUFFER_BIT : 0;
+    
+    glClear(GLBuffers);
 }
 
 IVertexArray *COGL3RenderDevice::CreateVertexArray(const CIndexedModel *indexedModel)

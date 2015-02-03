@@ -7,6 +7,7 @@
 //
 
 #include "CCMSkybox.h"
+#include "Environment.h"
 
 CSkyboxClearMethod::CSkyboxClearMethod(CSkybox *skybox)
 {
@@ -19,5 +20,6 @@ CSkyboxClearMethod::~CSkyboxClearMethod()
 
 void CSkyboxClearMethod::Clear(CCamera *camera, IRenderDevice *renderDevice)
 {
+    g_subSystem->GetRenderDevice()->Clear(eCLEAR_DEPTH);
     m_skybox->Render(camera);
 }

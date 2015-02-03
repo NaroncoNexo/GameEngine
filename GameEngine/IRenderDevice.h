@@ -14,8 +14,16 @@
 #include "IShader.h"
 #include "IShaderProgram.h"
 #include "ITexture.h"
+#include "IViewport.h"
 
 typedef unsigned char Pixel_t;
+
+enum
+{
+    eCLEAR_COLOR = 1 << 0,
+    eCLEAR_DEPTH = 1 << 1,
+    eCLEAR_STENCIL = 1 << 2
+};
 
 class IRenderDevice
 {
@@ -26,8 +34,13 @@ public:
     virtual void Create() = 0;
     virtual void Release() = 0;
     
+    virtual IViewport *CreateViewport(int x, int y, int width, int height) = 0;
+    virtual void ReleaseViewport(IViewport *viewport) = 0;
+    
     virtual void BeginFrame() = 0;
     virtual void EndFrame() = 0;
+    
+    virtual void Clear(int buffers) = 0;
 
 	virtual IVertexArray *CreateVertexArray(const CIndexedModel *indexedModel) = 0;
 	virtual void ReleaseVertexArray(IVertexArray *vertexArray) = 0;

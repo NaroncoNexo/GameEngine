@@ -14,7 +14,7 @@ const CFileSystem *g_FileSys = CFileSystem::GetInstance();
 CFileSystem::CFileSystem()
 {
     // TODO: Implement this correctly
-    m_resourcePath = "/Volumes/Daten/Development/Swift, Objective-C/GameEngine/";
+    m_resourcePath = "/Volumes/Daten/Development/C, C++/GameEngine/";
 }
 
 CFileSystem::~CFileSystem()

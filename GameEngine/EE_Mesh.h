@@ -25,6 +25,8 @@ public:
     void AddMeshRendererExtension(CMeshRendererExtension *meshRendererExtension);
     void RemoveMeshRendererExtension(CMeshRendererExtension *meshRendererExtension);
     
+    void SwitchMeshRendererExtensionMaterial(CMeshRendererExtension *meshRendererExtension, const CMaterial *oldMaterial);
+    
 private:
     std::map<const CMaterial *, std::vector<const CMeshRendererExtension *>> m_meshRendererExtensions;
 };
@@ -41,8 +43,8 @@ public:
     virtual void Update();
 	virtual void Render(const SEntityExtensionRenderParams &params);
     
-    inline void SetModel(const IVertexArray *model) { m_model = model; }
-    inline void SetMaterial(const CMaterial *material) { m_material = material; }
+    void SetModel(const IVertexArray *model);
+    void SetMaterial(const CMaterial *material);
     
     inline const IVertexArray *GetModel() const { return m_model; }
 	inline const CMaterial *GetMaterial() const { return m_material; }

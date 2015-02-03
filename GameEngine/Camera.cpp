@@ -7,15 +7,20 @@
 //
 
 #include "Camera.h"
+#include "Environment.h"
 
-CCamera::CCamera(f32 fov, f32 aspectRatio, f32 zNear, f32 zFar)
+CCamera::CCamera()
 {
     m_transform = new CTransform;
-    m_projectionMatrix = SMatrix4::CreatePerspective(fov, aspectRatio, zNear, zFar);
 }
 
 CCamera::~CCamera()
 {
+    if (m_viewport != nullptr && m_releaseViewport)
+    {
+        g_subSystem->GetRenderDevice()->ReleaseViewport(m_viewport);
+    }
+    
     delete m_transform;
 }
 
@@ -27,4 +32,31 @@ void CCamera::UpdateMatrices()
 
 	m_viewMatrix = m_scaleMatrix * m_rotationMatrix * m_translationMatrix;
 	m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
+}
+
+void CCamera::SetViewport(int x, int y, int width, int height)
+{
+    if (m_viewport != nullptr && m_releaseViewport)
+    {
+        g_subSystem->GetRenderDevice()->ReleaseViewport(m_viewport);
+    }
+    
+    m_viewport = g_subSystem->GetRenderDevice()->CreateViewport(x, y, width, height);
+    m_releaseViewport = true;
+}
+
+void CCamera::SetViewport(IViewport *viewport)
+{
+    if (m_viewport != nullptr && m_releaseViewport)
+    {
+        g_subSystem->GetRenderDevice()->ReleaseViewport(m_viewport);
+    }
+    
+    m_viewport = viewport;
+    m_releaseViewport = false;
+}
+
+void CCamera::SetPerspectiveProjection(f32 fov, f32 aspectRatio, f32 zNear, f32 zFar)
+{
+    m_projectionMatrix = SMatrix4::CreatePerspective(fov, aspectRatio, zNear, zFar);
 }

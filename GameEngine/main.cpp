@@ -17,6 +17,7 @@
 #include "FileSystem.h"
 #include "CCMSkybox.h"
 #include "sdl/SDL2SubSystem.h"
+#include "Environment.h"
 
 struct test_vertex
 {
@@ -48,6 +49,8 @@ int main(int argc, char * argv[])
     //IInputDevice *inputDevice = subSystem->GetInputDevice();
     IRenderContext *renderContext = subSystem->GetRenderContext();
     IRenderDevice *renderDevice = subSystem->GetRenderDevice();
+    
+    g_subSystem = subSystem;
     
     std::string vertexShaderSourceCode = ""
     "#version 330\n"
@@ -81,18 +84,18 @@ int main(int argc, char * argv[])
     "\n"
     "out vec4 v_FragColor;\n"
     "\n"
-    "uniform sampler2D u_DiffuseTexture;\n"
+    //"uniform sampler2D u_DiffuseTexture;\n"
     "\n"
     "void main()\n"
     "{\n"
-    "   vec4 diffuseColor = texture(u_DiffuseTexture, v_TextureCoordinate);\n"
+    //"   vec4 diffuseColor = texture(u_DiffuseTexture, v_TextureCoordinate);\n"
     "   \n"
-    "   if (diffuseColor.a < 0.5)\n"
-    "       discard;\n"
+    //"   if (diffuseColor.a < 0.5)\n"
+    //"       discard;\n"
     "   \n"
     "   float nDotL = max(0.0, dot(v_Normal, normalize(vec3(-0.3, 1.0, -0.5))));\n"
     "   \n"
-    "   v_FragColor = vec4(diffuseColor.rgb * nDotL, 1.0);\n"
+    "   v_FragColor = vec4(vec3(1, 0, 1), 1.0);\n"
     "}"
     "";
     
@@ -157,8 +160,6 @@ int main(int argc, char * argv[])
     ITexture *cubeMap = renderDevice->CreateTextureCubeMap(&cb_dat, eTEXTUREFILTER_NEAREST);
     
     //ITexture *rock_diffTexture = LoadTexture(renderDevice, "res/tex/rock_diff.png");
-    
-    SVector3 cameraPosition = { 0, 0, -10 };
     
     CEntityRoot *root = new CEntityRoot(subSystem);
     
@@ -226,8 +227,12 @@ int main(int argc, char * argv[])
     
     planetExtension->AddDetailMap(rockDetailMap);*/
     
-    CCamera *camera = new CCamera(DEG2RAD(70.0f), 1280.0f / 720.0f, 0.01f, 100.0f);
-    camera->GetTransform()->SetTranslation(cameraPosition);
+    CEntity *sphere = root->AddChild();
+    
+    CCamera *camera = new CCamera();
+    camera->SetViewport(0, 0, display->GetWidth(), display->GetHeight());
+    camera->SetPerspectiveProjection(DEG2RAD(70.0f), camera->GetViewport()->GetAspectRatio(), 0.01f, 100.0f);
+    camera->GetTransform()->SetTranslation({ 0, 0, -5 });
     camera->GetTransform()->SetRotation(SQuaternion::CreateEuler(0, 0, 0));
     
     CSkybox *skybox = new CSkybox(subSystem->GetRenderDevice(), cubeMap);
@@ -236,6 +241,16 @@ int main(int argc, char * argv[])
     camera->SetClearMethod(skyboxClearMethod);
     
     root->AddCamera(camera);
+    
+    /*CCamera *camera2 = new CCamera();
+    camera2->SetViewport(display->GetWidth() >> 1, 0, display->GetWidth() >> 1, display->GetHeight());
+    camera2->SetPerspectiveProjection(DEG2RAD(70.0f), camera->GetViewport()->GetAspectRatio(), 0.01f, 100.0f);
+    camera2->GetTransform()->SetTranslation({ 0, 0, -5 });
+    camera2->GetTransform()->SetRotation(SQuaternion::CreateEuler(0, 0, 0));
+    
+    camera2->SetClearMethod(skyboxClearMethod);
+    
+    root->AddCamera(camera2);*/
     
  /*   srand(SDL_GetTicks());
     test_vertex *vertexBuffer = (test_vertex *)sphereModel->MapBuffer(eBUFFERTYPE_VERTEXBUFFER);
@@ -246,6 +261,18 @@ int main(int argc, char * argv[])
         vertexBuffer[r].z*=2.0f;
     }
     sphereModel->UnmapBuffer(eBUFFERTYPE_VERTEXBUFFER);*/
+    
+    IVertexArray *sphereMesh = renderDevice->CreateVertexArray(&CIndexedModel::LoadFromFile(g_FileSys->GetPathToResourceFile("res/sphere.obj"))[0]);
+    
+    CMaterial *sphereMaterial = new CMaterial;
+    sphereMaterial->SetShader(shader);
+    
+    CMeshRendererExtension *meshRenderer = sphere->AddExtension<CMeshRendererExtension>();
+    
+    meshRenderer->SetModel(sphereMesh);
+    meshRenderer->SetMaterial(sphereMaterial);
+    
+    printf("%p\n", sphereMaterial);
 
     while (subSystem->Update())
     {
@@ -260,7 +287,7 @@ int main(int argc, char * argv[])
         lastMousePos = mousePos;
         
         auto v = camera->GetTransform()->GetRotation().GetRight();
-        printf("%f, %f, %f\n", v.x, v.y, v.z);
+        //printf("%f %f %f\n", v.x, v.y, v.z);
         
         camera->GetTransform()->Rotate(SQuaternion::CreateAxisRotation({ 0, 1, 0 }, DEG2RAD(-deltaPos.x * 0.1f)));
         camera->GetTransform()->Rotate(SQuaternion::CreateAxisRotation(camera->GetTransform()->GetRotation().GetRight(), DEG2RAD(-deltaPos.y * 0.1f)));
@@ -278,8 +305,12 @@ int main(int argc, char * argv[])
     delete skyboxClearMethod;
     delete skybox;
     delete root;
+    //delete camera2;
+    delete camera;
+    delete sphereMaterial;
     //delete skyboxMaterial;
     //renderDevice->ReleaseTexture(rock_diffTexture);
+    renderDevice->ReleaseVertexArray(sphereMesh);
     renderDevice->ReleaseTexture(cubeMap);
     //renderDevice->ReleaseVertexArray(sphereModel);
     renderDevice->ReleaseTexture(diffuseTexture);

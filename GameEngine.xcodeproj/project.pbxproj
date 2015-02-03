@@ -34,6 +34,8 @@
 		8FDC85EC1A7B8DE500327E93 /* Skybox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FDC85EA1A7B8DE500327E93 /* Skybox.cpp */; };
 		8FDC85F11A7BD5BD00327E93 /* SDL2Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FDC85EF1A7BD5BD00327E93 /* SDL2Timer.cpp */; };
 		8FDC85F71A7BD68000327E93 /* SDL2InputDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FDC85F51A7BD68000327E93 /* SDL2InputDevice.cpp */; };
+		8FE881A51A7FACCF00891A02 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FE881A31A7FACCF00891A02 /* Environment.cpp */; };
+		8FE881A81A7FAE9F00891A02 /* OGL3Viewport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FE881A61A7FAE9F00891A02 /* OGL3Viewport.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -113,6 +115,11 @@
 		8FDC85F01A7BD5BD00327E93 /* SDL2Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL2Timer.h; sourceTree = "<group>"; };
 		8FDC85F51A7BD68000327E93 /* SDL2InputDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SDL2InputDevice.cpp; sourceTree = "<group>"; };
 		8FDC85F61A7BD68000327E93 /* SDL2InputDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDL2InputDevice.h; sourceTree = "<group>"; };
+		8FE881A21A7FAADA00891A02 /* IViewport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IViewport.h; sourceTree = "<group>"; };
+		8FE881A31A7FACCF00891A02 /* Environment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Environment.cpp; sourceTree = "<group>"; };
+		8FE881A41A7FACCF00891A02 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
+		8FE881A61A7FAE9F00891A02 /* OGL3Viewport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OGL3Viewport.cpp; sourceTree = "<group>"; };
+		8FE881A71A7FAE9F00891A02 /* OGL3Viewport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OGL3Viewport.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,17 +187,20 @@
 				8F5FDD0E1A74E31700E4B296 /* IShader.h */,
 				8F5FDC5D1A70119800E4B296 /* IShaderProgram.h */,
 				8F5FDC601A70119800E4B296 /* IVertexArray.h */,
+				8FE881A21A7FAADA00891A02 /* IViewport.h */,
 				8F5FDC611A70119800E4B296 /* lodepng.cpp */,
 				8F5FDC621A70119800E4B296 /* lodepng.h */,
 				8F5FDC631A70119800E4B296 /* main.cpp */,
 				8F5FDC641A70119800E4B296 /* Material.cpp */,
 				8F5FDC651A70119800E4B296 /* Material.h */,
 				8F5FDC661A70119800E4B296 /* Math3D.h */,
-				8F5FDC741A7011B000E4B296 /* opengl */,
-				8F5FDC7F1A7011B000E4B296 /* sdl */,
 				8F5FDC671A70119800E4B296 /* Singleton.h */,
 				8F5FDC681A70119800E4B296 /* Transform.cpp */,
 				8F5FDC691A70119800E4B296 /* Transform.h */,
+				8FE881A31A7FACCF00891A02 /* Environment.cpp */,
+				8FE881A41A7FACCF00891A02 /* Environment.h */,
+				8F5FDC741A7011B000E4B296 /* opengl */,
+				8F5FDC7F1A7011B000E4B296 /* sdl */,
 			);
 			path = GameEngine;
 			sourceTree = "<group>";
@@ -210,6 +220,8 @@
 				8F5FDC8E1A7011D200E4B296 /* OGL3VertexArray.h */,
 				8F5FDC8F1A7011D200E4B296 /* OGL3VertexStream.cpp */,
 				8F5FDC901A7011D200E4B296 /* OGL3VertexStream.h */,
+				8FE881A61A7FAE9F00891A02 /* OGL3Viewport.cpp */,
+				8FE881A71A7FAE9F00891A02 /* OGL3Viewport.h */,
 			);
 			path = opengl;
 			sourceTree = "<group>";
@@ -294,12 +306,14 @@
 				8F5FDC6C1A70119800E4B296 /* EE_Planet.cpp in Sources */,
 				8FDC85EC1A7B8DE500327E93 /* Skybox.cpp in Sources */,
 				8F5FDC6B1A70119800E4B296 /* EE_Mesh.cpp in Sources */,
+				8FE881A51A7FACCF00891A02 /* Environment.cpp in Sources */,
 				8F5FDCD91A70138400E4B296 /* FileSystem.cpp in Sources */,
 				8F5FDC9E1A7011DB00E4B296 /* SDL2Window.cpp in Sources */,
 				8FDC85F71A7BD68000327E93 /* SDL2InputDevice.cpp in Sources */,
 				8FDC85E91A7B8D7600327E93 /* CCMSkybox.cpp in Sources */,
 				8F5FDC6A1A70119800E4B296 /* Camera.cpp in Sources */,
 				8F5FDD121A74E3C800E4B296 /* OGL3Shader.cpp in Sources */,
+				8FE881A81A7FAE9F00891A02 /* OGL3Viewport.cpp in Sources */,
 				8F5FDC6E1A70119800E4B296 /* Entity.cpp in Sources */,
 				8F5FDC6D1A70119800E4B296 /* EE_Skybox.cpp in Sources */,
 				8F5FDC931A7011D200E4B296 /* OGL3Texture.cpp in Sources */,

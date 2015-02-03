@@ -105,6 +105,11 @@ IInputDevice *CSDL2SubSystem::GetInputDevice() const
     return m_inputDevice;
 }
 
+IDisplay *CSDL2SubSystem::GetDisplay() const
+{
+    return m_window;
+}
+
 IRenderContext *CSDL2SubSystem::GetRenderContext() const
 {
     return m_renderContext;

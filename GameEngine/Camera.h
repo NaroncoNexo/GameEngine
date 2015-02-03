@@ -27,14 +27,19 @@ public:
 class CCamera
 {
 public:
-    CCamera(f32 fov, f32 aspectRatio, f32 zNear, f32 zFar);
+    CCamera();
     ~CCamera();
     
 	void UpdateMatrices();
     
+    void SetViewport(int x, int y, int width, int height);
+    void SetViewport(IViewport *viewport);
+    void SetPerspectiveProjection(f32 fov, f32 aspectRatio, f32 zNear, f32 zFar);
+    
     inline void SetClearMethod(IClearMethod *clearMethod) { m_clearMethod = clearMethod; }
-
+    
     inline CTransform *GetTransform() const { return m_transform; }
+    inline IViewport *GetViewport() const { return m_viewport; }
     inline IClearMethod *GetClearMethod() const { return m_clearMethod; }
     
 	inline const SMatrix4 &GetViewMatrix() const { return m_viewMatrix; }
@@ -47,9 +52,11 @@ public:
     
 private:
     CTransform *m_transform { nullptr };
+    IViewport *m_viewport { nullptr };
     IClearMethod *m_clearMethod { nullptr };
 	SMatrix4 m_viewMatrix, m_projectionMatrix, m_viewProjectionMatrix;
 	SMatrix4 m_translationMatrix, m_rotationMatrix, m_scaleMatrix;
+    bool m_releaseViewport { false };
 };
 
 #endif

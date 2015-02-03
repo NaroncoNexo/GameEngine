@@ -49,6 +49,7 @@ CSkybox::CSkybox(IRenderDevice *renderDevice, ITexture *cubeMapTexture)
         std::string fragmentShaderSourceCode = "#version 330\nin vec3 v_Position;out vec4 v_FragColor;uniform samplerCube u_SkyboxTexture;void main() { vec3 textureDirection = normalize(v_Position); v_FragColor = texture(u_SkyboxTexture, textureDirection); }";
         
         s_shader = m_renderDevice->CreateShaderProgram(vertexShaderSourceCode, fragmentShaderSourceCode);
+        s_shader->SetBool(eSHADERPROPERTY_DEPTHMASKENABLED, false);
     }
 }
 

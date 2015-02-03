@@ -20,8 +20,13 @@ public:
     virtual void Create();
     virtual void Release();
     
+    virtual IViewport *CreateViewport(int x, int y, int width, int height);
+    virtual void ReleaseViewport(IViewport *viewport);
+    
     virtual void BeginFrame();
     virtual void EndFrame();
+    
+    virtual void Clear(int buffers);
 
 	virtual IVertexArray *CreateVertexArray(const CIndexedModel *indexedModel);
 	virtual void ReleaseVertexArray(IVertexArray *vertexArray);

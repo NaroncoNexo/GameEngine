@@ -162,6 +162,7 @@ void CEntityRoot::Render()
     
     for (auto &camera : m_cameras)
     {
+        camera->GetViewport()->Set();
         camera->GetClearMethod()->Clear(camera, m_subSystem->GetRenderDevice());
         
         params.camera = camera;
