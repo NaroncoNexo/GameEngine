@@ -14,7 +14,8 @@
 #include <IndexedModel.h>
 #include <functional>
 #include <vector>
-#include <OpenGL/gl3.h>
+
+typedef unsigned int GLuint, GLenum;
 
 class COGL3VertexArray : public IVertexArray
 {

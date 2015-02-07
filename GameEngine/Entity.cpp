@@ -9,15 +9,10 @@
 #include "Entity.h"
 #include "Camera.h"
 #include "EE_Mesh.h"
+#include "Environment.h"
 
 CEntity::CEntity()
 {
-	m_transform = new CTransform;
-}
-
-CEntity::CEntity(ISubSystem *subSystem)
-{
-	m_subSystem = subSystem;
 	m_transform = new CTransform;
 }
 
@@ -48,15 +43,13 @@ void CEntity::AddChild(CEntity *child)
 		child->RemoveFromParent();
 	}
 
-	child->m_subSystem = m_subSystem;
-	
 	m_children.push_back(child);
 	child->m_parent = this;
 }
 
 CEntity *CEntity::AddChild(EntityConfigurator_t Configurator, int argc, ...)
 {
-	CEntity *child = new CEntity(m_subSystem);
+	CEntity *child = new CEntity;
 	
 	m_children.push_back(child);
 	child->m_parent = this;
@@ -140,10 +133,6 @@ CEntityRoot::CEntityRoot() : CEntity()
 {
 }
 
-CEntityRoot::CEntityRoot(ISubSystem *subSystem) : CEntity(subSystem)
-{
-}
-
 CEntityRoot::~CEntityRoot()
 {
 }
@@ -163,7 +152,7 @@ void CEntityRoot::Render()
     for (auto &camera : m_cameras)
     {
         camera->GetViewport()->Set();
-        camera->GetClearMethod()->Clear(camera, m_subSystem->GetRenderDevice());
+        camera->GetClearMethod()->Clear(camera, g_subSystem->GetRenderDevice());
         
         params.camera = camera;
         

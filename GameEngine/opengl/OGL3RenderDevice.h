@@ -35,11 +35,10 @@ public:
     virtual void ReleaseShader(IShader *shader);
     
     virtual IShaderProgram *CreateEmptyShaderProgram();
-    virtual IShaderProgram *CreateShaderProgram(const std::string &vertexSourceCode, const std::string &fragmentSourceCode);
     virtual void ReleaseShaderProgram(IShaderProgram *shaderProgram);
 
-    virtual ITexture *CreateTexture2D(const STextureData2D *data, int filter, int wrap);
-    virtual ITexture *CreateTextureCubeMap(const STextureDataCubeMap *data, int filter);
+    virtual ITexture *CreateTexture2D(const STextureData2D &data, int filter, int wrap);
+    virtual ITexture *CreateTextureCubeMap(const STextureDataCubeMap &data, int filter);
     virtual void ReleaseTexture(ITexture *texture);
 };
 

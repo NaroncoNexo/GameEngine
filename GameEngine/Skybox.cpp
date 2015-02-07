@@ -9,14 +9,14 @@
 #include "Skybox.h"
 #include "Camera.h"
 #include "IndexedModel.h"
+#include "RenderDeviceUtils.h"
 
 int CSkybox::s_referenceCounter = 0;
 IVertexArray *CSkybox::s_mesh = nullptr;
 IShaderProgram *CSkybox::s_shader = nullptr;
 
-CSkybox::CSkybox(IRenderDevice *renderDevice, ITexture *cubeMapTexture)
+CSkybox::CSkybox(ITexture *cubeMapTexture)
 {
-    m_renderDevice = renderDevice;
     m_cubeMapTexture = cubeMapTexture;
     
     if (s_referenceCounter++ == 0)
@@ -43,12 +43,12 @@ CSkybox::CSkybox(IRenderDevice *renderDevice, ITexture *cubeMapTexture)
         model.SetVertexData((const float *)vertices, 8, eVERTEXDESC_POSITION);
         model.SetIndexData(indices, 14);
         
-        s_mesh = m_renderDevice->CreateVertexArray(&model);
+        s_mesh = g_subSystem->GetRenderDevice()->CreateVertexArray(&model);
         
         std::string vertexShaderSourceCode = "#version 330\nlayout(location = 0) in vec4 a_Position;out vec3 v_Position;uniform mat4 u_RotationMatrix;void main() { v_Position = a_Position.xyz; gl_Position = u_RotationMatrix * a_Position; }";
         std::string fragmentShaderSourceCode = "#version 330\nin vec3 v_Position;out vec4 v_FragColor;uniform samplerCube u_SkyboxTexture;void main() { vec3 textureDirection = normalize(v_Position); v_FragColor = texture(u_SkyboxTexture, textureDirection); }";
         
-        s_shader = m_renderDevice->CreateShaderProgram(vertexShaderSourceCode, fragmentShaderSourceCode);
+        s_shader = CreateShaderProgram(vertexShaderSourceCode, fragmentShaderSourceCode);
         s_shader->SetBool(eSHADERPROPERTY_DEPTHMASKENABLED, false);
     }
 }
@@ -57,8 +57,8 @@ CSkybox::~CSkybox()
 {
     if (--s_referenceCounter == 0)
     {
-        m_renderDevice->ReleaseShaderProgram(s_shader);
-        m_renderDevice->ReleaseVertexArray(s_mesh);
+		g_subSystem->GetRenderDevice()->ReleaseShaderProgram(s_shader);
+		g_subSystem->GetRenderDevice()->ReleaseVertexArray(s_mesh);
     }
 }
 

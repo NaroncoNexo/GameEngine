@@ -26,11 +26,15 @@ public:
 	virtual std::string GetTitle() const;
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
+	virtual bool HasFocus() const;
+
+	inline void SetHasFocus(bool hasFocus) { m_hasFocus = hasFocus; }
 
 	inline SDL_Window *GetSDLWindow() const { return m_SDLWindow; }
 
 private:
 	SDL_Window *m_SDLWindow;
+	bool m_hasFocus{ true };
 };
 
 #endif

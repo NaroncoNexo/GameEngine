@@ -15,6 +15,7 @@
 #include "IShaderProgram.h"
 #include "ITexture.h"
 #include "IViewport.h"
+#include "FileSystem.h"
 
 typedef unsigned char Pixel_t;
 
@@ -49,11 +50,10 @@ public:
     virtual void ReleaseShader(IShader *shader) = 0;
     
     virtual IShaderProgram *CreateEmptyShaderProgram() = 0;
-    virtual IShaderProgram *CreateShaderProgram(const std::string &vertexSourceCode, const std::string &fragmentSourceCode) = 0;
     virtual void ReleaseShaderProgram(IShaderProgram *shaderProgram) = 0;
 
-    virtual ITexture *CreateTexture2D(const STextureData2D *data, int filter, int wrap) = 0;
-    virtual ITexture *CreateTextureCubeMap(const STextureDataCubeMap *data, int filter) = 0;
+    virtual ITexture *CreateTexture2D(const STextureData2D &data, int filter, int wrap) = 0;
+    virtual ITexture *CreateTextureCubeMap(const STextureDataCubeMap &data, int filter) = 0;
     virtual void ReleaseTexture(ITexture *texture) = 0;
 };
 

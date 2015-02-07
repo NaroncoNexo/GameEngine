@@ -17,15 +17,11 @@ void CShaderSortedMeshRenderer::Render(CCamera *camera)
     g_sharedUniformLookUp.at("u_RotationMatrix").data = &rotationMatrix;
     g_sharedUniformLookUp.at("u_CameraPosition").data = &cameraPosition;
     
-    printf("%lu\n", m_meshRendererExtensions.size());
-    
     for (const auto &materialGroup : m_meshRendererExtensions)
     {
         const CMaterial *material = materialGroup.first;
         const std::vector<const CMeshRendererExtension *> &meshRendererExtensions = materialGroup.second;
         
-        printf("%p\n", material);
-
         if (material == nullptr)
         {
             continue;
@@ -61,25 +57,16 @@ void CShaderSortedMeshRenderer::Render(CCamera *camera)
 
 void CShaderSortedMeshRenderer::AddMeshRendererExtension(CMeshRendererExtension *meshRendererExtension)
 {
-    std::cout << "ADD BEGIN" << std::endl;
-    std::cout << m_meshRendererExtensions.size() << std::endl;
-    
     auto materialIterator = m_meshRendererExtensions.find(meshRendererExtension->GetMaterial());
     
     if (materialIterator != m_meshRendererExtensions.end())
         materialIterator->second.push_back(meshRendererExtension);
     else
         m_meshRendererExtensions[meshRendererExtension->GetMaterial()] = { meshRendererExtension };
-    
-    std::cout << m_meshRendererExtensions.size() << std::endl;
-    std::cout << "ADD END" << std::endl;
 }
 
 void CShaderSortedMeshRenderer::RemoveMeshRendererExtension(CMeshRendererExtension *meshRendererExtension)
 {
-    std::cout << "REMOVE BEGIN" << std::endl;
-    std::cout << m_meshRendererExtensions.size() << std::endl;
-    
     auto iter = m_meshRendererExtensions.find(meshRendererExtension->GetMaterial());
     
     iter->second.erase(std::find(iter->second.begin(), iter->second.end(), meshRendererExtension));
@@ -87,9 +74,6 @@ void CShaderSortedMeshRenderer::RemoveMeshRendererExtension(CMeshRendererExtensi
     {
         m_meshRendererExtensions.erase(iter);
     }
-    
-    std::cout << m_meshRendererExtensions.size() << std::endl;
-    std::cout << "REMOVE END" << std::endl;
 }
 
 void CShaderSortedMeshRenderer::SwitchMeshRendererExtensionMaterial(CMeshRendererExtension *meshRendererExtension, const CMaterial *oldMaterial)
@@ -142,7 +126,6 @@ void CMeshRendererExtension::SetModel(const IVertexArray *model)
 
 void CMeshRendererExtension::SetMaterial(const CMaterial *material)
 {
-    //CShaderSortedMeshRenderer::GetInstance()->SwitchMeshRendererExtensionMaterial(this, oldMaterial);
     CShaderSortedMeshRenderer::GetInstance()->RemoveMeshRendererExtension(this);
     m_material = material;
     CShaderSortedMeshRenderer::GetInstance()->AddMeshRendererExtension(this);

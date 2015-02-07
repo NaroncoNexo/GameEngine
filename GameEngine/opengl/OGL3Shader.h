@@ -10,8 +10,9 @@
 #define __GameEngine__OGL3Shader__
 
 #include <IShader.h>
-#include <OpenGL/gl3.h>
 #include <string>
+
+typedef unsigned int GLuint;
 
 class COGL3Shader : public IShader
 {

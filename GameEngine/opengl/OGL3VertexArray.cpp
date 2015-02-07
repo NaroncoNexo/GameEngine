@@ -7,6 +7,7 @@
 //
 
 #include "OGL3VertexArray.h"
+#include "OGL3.h"
 #include <map>
 
 const std::map<int, GLenum> g_drawModeToGLDrawMode =

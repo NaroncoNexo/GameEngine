@@ -17,7 +17,8 @@ public:
 	void UpdateMatrices();
     
     void Rotate(const SQuaternion &rotation);
-    
+	void LookAt(const SVector3 &point);
+
     inline void SetTranslation(const SVector3 &translation) { m_translation = translation; }
     inline void SetRotation(const SQuaternion &rotation) { m_rotation = rotation; }
     inline void SetScale(const SVector3 &scale) { m_scale = scale; }

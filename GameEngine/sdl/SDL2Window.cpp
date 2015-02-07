@@ -10,7 +10,11 @@
 
 CSDL2Window::CSDL2Window(const std::string &title, int width, int height)
 {
-	m_SDLWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
+	m_SDLWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+	if (m_SDLWindow == nullptr)
+	{
+		std::cerr << "Failed to create SDL window\nError message: " << SDL_GetError() << std::endl;
+	}
 }
 
 CSDL2Window::~CSDL2Window()
@@ -55,4 +59,9 @@ int CSDL2Window::GetHeight() const
 	int h;
 	SDL_GetWindowSize(m_SDLWindow, nullptr, &h);
 	return h;
+}
+
+bool CSDL2Window::HasFocus() const
+{
+	return m_hasFocus;
 }

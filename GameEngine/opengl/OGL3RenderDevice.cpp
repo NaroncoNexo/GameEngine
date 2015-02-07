@@ -12,7 +12,7 @@
 #include "OGL3ShaderProgram.h"
 #include "OGL3Texture.h"
 #include "OGL3Viewport.h"
-#include <OpenGL/gl3.h>
+#include "OGL3.h"
 #include <functional>
 
 COGL3RenderDevice::COGL3RenderDevice()
@@ -25,6 +25,14 @@ COGL3RenderDevice::~COGL3RenderDevice()
 
 void COGL3RenderDevice::Create()
 {
+#ifdef _WIN32
+	glewExperimental = GL_TRUE;
+	GLenum error = glewInit();
+	if (error != GLEW_OK)
+	{
+		std::cerr << "Failed to initialize GLEW\nError message: " << glewGetErrorString(error) << std::endl;
+	}
+#endif
 }
 
 void COGL3RenderDevice::Release()
@@ -106,22 +114,17 @@ IShaderProgram *COGL3RenderDevice::CreateEmptyShaderProgram()
     return new COGL3ShaderProgram;
 }
 
-IShaderProgram *COGL3RenderDevice::CreateShaderProgram(const std::string &vertexSourceCode, const std::string &fragmentSourceCode)
-{
-    return new COGL3ShaderProgram(vertexSourceCode, fragmentSourceCode);
-}
-
 void COGL3RenderDevice::ReleaseShaderProgram(IShaderProgram *shaderProgram)
 {
     delete shaderProgram;
 }
 
-ITexture *COGL3RenderDevice::CreateTexture2D(const STextureData2D *data, int filter, int wrap)
+ITexture *COGL3RenderDevice::CreateTexture2D(const STextureData2D &data, int filter, int wrap)
 {
     return new COGL3Texture(data, filter, wrap);
 }
 
-ITexture *COGL3RenderDevice::CreateTextureCubeMap(const STextureDataCubeMap *data, int filter)
+ITexture *COGL3RenderDevice::CreateTextureCubeMap(const STextureDataCubeMap &data, int filter)
 {
     return new COGL3Texture(data, filter);
 }

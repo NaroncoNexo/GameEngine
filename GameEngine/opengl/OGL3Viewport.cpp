@@ -7,7 +7,7 @@
 //
 
 #include "OGL3Viewport.h"
-#include <OpenGL/gl3.h>
+#include "OGL3.h"
 #include <stdio.h>
 
 COGL3Viewport::COGL3Viewport(int x, int y, int width, int height)

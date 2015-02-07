@@ -7,6 +7,7 @@
 //
 
 #include "OGL3ShaderProgram.h"
+#include "OGL3.h"
 #include <iostream>
 
 GLuint LoadShader(GLenum shaderType, const std::string &sourceCode);

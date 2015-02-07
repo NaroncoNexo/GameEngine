@@ -18,315 +18,137 @@
 #include "CCMSkybox.h"
 #include "sdl/SDL2SubSystem.h"
 #include "Environment.h"
+#include "RenderDeviceUtils.h"
 
-struct test_vertex
+int main(int argc, char *argv[])
 {
-    float x, y, z;
-    float u, v;
-    float nx, ny, nz;
-};
+	g_subSystem = new CSDL2SubSystem;
+	g_subSystem->CreateDisplay(1280, 720, "Hello, World!");
+	
+	std::string vertexShaderSourceCode = ""
+		"#version 330\n"
+		"\n"
+		"\n"
+		"layout (location = 0) in vec3 a_Position;"
+		"layout (location = 1) in vec2 a_TextureCoordinate;"
+		"layout (location = 2) in vec3 a_Normal;"
+		""
+		"out vec2 v_TextureCoordinate;\n"
+		"out vec3 v_Normal;\n"
+		""
+		"uniform mat4 u_WorldMatrix;"
+		"uniform mat4 u_WorldViewProjectionMatrix;"
+		"uniform mat4 u_TextureMatrix;"
+		""
+		"void main()"
+		"{"
+		"   v_TextureCoordinate = (u_TextureMatrix * vec4(a_TextureCoordinate, 0, 1)).xy;"
+		"   v_Normal = (u_WorldMatrix * vec4(a_Normal, 0)).xyz;"
+		"   "
+		"   gl_Position = u_WorldViewProjectionMatrix * vec4(a_Position, 1);"
+		"}"
+		"";
 
-ITexture *LoadTexture(IRenderDevice *renderDevice, const std::string &name)
-{
-    STextureData2D hg_tex_data = STextureData2D::LoadFromFile(CFileSystem::GetInstance()->GetPathToResourceFile(name));
-    return renderDevice->CreateTexture2D(&hg_tex_data, eTEXTUREFILTER_NEAREST, eTEXTUREWRAP_REPEAT);
-}
+	std::string fragmentShaderSourceCode = ""
+		"#version 330\n"
+		"\n"
+		"in vec2 v_TextureCoordinate;\n"
+		"in vec3 v_Normal;\n"
+		"\n"
+		"out vec4 v_FragColor;\n"
+		"\n"
+		//"uniform sampler2D u_DiffuseTexture;\n"
+		"\n"
+		"void main()\n"
+		"{\n"
+		//"   vec4 diffuseColor = texture(u_DiffuseTexture, v_TextureCoordinate);\n"
+		"   \n"
+		//"   if (diffuseColor.a < 0.5)\n"
+		//"       discard;\n"
+		"   \n"
+		"   float nDotL = max(0.0, dot(v_Normal, normalize(vec3(-0.3, 1.0, -0.5))));\n"
+		"   \n"
+		"   v_FragColor = vec4(vec3(1, 0, 1), 1.0);\n"
+		"}"
+		"";
 
-IShaderProgram *CreateShaderProgram(IRenderDevice *renderDevice, IShader *v, IShader *f)
-{
-    IShaderProgram *sp = renderDevice->CreateEmptyShaderProgram();
-    sp->AddShader(v);
-    sp->AddShader(f);
-    sp->Build();
-    return sp;
-}
+	IShaderProgram *shader = CreateShaderProgram(vertexShaderSourceCode, fragmentShaderSourceCode);
 
-int main(int argc, char * argv[])
-{
-    ISubSystem *subSystem = new CSDL2SubSystem;
-    IDisplay *display = subSystem->CreateDisplay(1280, 720, "Hello, World!");
-    //ITimer *timer = subSystem->GetTimer();
-    //IInputDevice *inputDevice = subSystem->GetInputDevice();
-    IRenderContext *renderContext = subSystem->GetRenderContext();
-    IRenderDevice *renderDevice = subSystem->GetRenderDevice();
-    
-    g_subSystem = subSystem;
-    
-    std::string vertexShaderSourceCode = ""
-    "#version 330\n"
-    "\n"
-    "\n"
-    "layout (location = 0) in vec3 a_Position;"
-    "layout (location = 1) in vec2 a_TextureCoordinate;"
-    "layout (location = 2) in vec3 a_Normal;"
-    ""
-    "out vec2 v_TextureCoordinate;\n"
-    "out vec3 v_Normal;\n"
-    ""
-    "uniform mat4 u_WorldMatrix;"
-    "uniform mat4 u_WorldViewProjectionMatrix;"
-    "uniform mat4 u_TextureMatrix;"
-    ""
-    "void main()"
-    "{"
-    "   v_TextureCoordinate = (u_TextureMatrix * vec4(a_TextureCoordinate, 0, 1)).xy;"
-    "   v_Normal = (u_WorldMatrix * vec4(a_Normal, 0)).xyz;"
-    "   "
-    "   gl_Position = u_WorldViewProjectionMatrix * vec4(a_Position, 1);"
-    "}"
-    "";
-    
-    std::string fragmentShaderSourceCode = ""
-    "#version 330\n"
-    "\n"
-    "in vec2 v_TextureCoordinate;\n"
-    "in vec3 v_Normal;\n"
-    "\n"
-    "out vec4 v_FragColor;\n"
-    "\n"
-    //"uniform sampler2D u_DiffuseTexture;\n"
-    "\n"
-    "void main()\n"
-    "{\n"
-    //"   vec4 diffuseColor = texture(u_DiffuseTexture, v_TextureCoordinate);\n"
-    "   \n"
-    //"   if (diffuseColor.a < 0.5)\n"
-    //"       discard;\n"
-    "   \n"
-    "   float nDotL = max(0.0, dot(v_Normal, normalize(vec3(-0.3, 1.0, -0.5))));\n"
-    "   \n"
-    "   v_FragColor = vec4(vec3(1, 0, 1), 1.0);\n"
-    "}"
-    "";
-    
-    IShaderProgram *shader = renderDevice->CreateShaderProgram(vertexShaderSourceCode, fragmentShaderSourceCode);
-    
-    //IShader *terrainGrassVs = renderDevice->CreateShader(eSHADERTYPE_VERTEX, g_FileSys->GetContentsOfFile(g_FileSys->GetPathToResourceFile("res/shader/terrain_grass.vsh")));
-    //IShader *terrainGrassFs = renderDevice->CreateShader(eSHADERTYPE_FRAGMENT, g_FileSys->GetContentsOfFile(g_FileSys->GetPathToResourceFile("res/shader/terrain_grass.fsh")));
-    
-    //IShaderProgram *terrainGrassPass1 = CreateShaderProgram(renderDevice, terrainGrassVs, terrainGrassFs);
-    //IShaderProgram *terrainGrassPass2 = CreateShaderProgram(renderDevice, terrainGrassVs, terrainGrassFs);
-    //terrainGrassPass2->SetInt(eSHADERPROPERTY_CULLFACE, eCULLFACE_FRONT);
-    
-    //renderDevice->ReleaseShader(terrainGrassFs);
-    //renderDevice->ReleaseShader(terrainGrassVs);
-    
-    /*std::string vertexShaderSourceCode_skybox = ""
-    "#version 330\n"
-    "\n"
-    "layout (location = 0) in vec4 a_Position;"
-    ""
-    "out vec3 v_Position;"
-    ""
-    "uniform mat4 u_RotationMatrix;"
-    ""
-    "void main()"
-    "{"
-    "   v_Position = a_Position.xyz;"
-    "   "
-    "   gl_Position = u_RotationMatrix * a_Position;"
-    "}"
-    "";
-    
-    std::string fragmentShaderSourceCode_skybox = ""
-    "#version 330\n"
-    "\n"
-    "in vec3 v_Position;\n"
-    "\n"
-    "out vec4 v_FragColor;\n"
-    "\n"
-    "uniform samplerCube u_SkyboxTexture;\n"
-    "\n"
-    "void main()\n"
-    "{\n"
-    "   vec3 textureDirection = normalize(v_Position);\n"
-    "\n"
-    "   v_FragColor = vec4(texture(u_SkyboxTexture, textureDirection).rgb, 1.0);\n"
-    "}\n"
-    "";*/
+	ITexture *diffuseTexture = LoadTexture2D("res/tex/grass_diff.png");
+	ITexture *cubeMap = LoadTextureCubeMap("res/oceanSkybox.png");
 
-    //IVertexArray *skyboxModel = renderDevice->CreateVertexArray(&CIndexedModel::LoadFromFile(CFileSystem::GetInstance()->GetPathToResourceFile("res/skybox.obj"))[0]);
-    
-    //IShaderProgram *skyboxShader = renderDevice->CreateShaderProgram(vertexShaderSourceCode_skybox, fragmentShaderSourceCode_skybox);
-    //skyboxShader->SetBool(eSHADERPROPERTY_DEPTHMASKENABLED, false);
+	CEntityRoot *root = new CEntityRoot;
 
-    STextureData2D diff_tex_data = STextureData2D::LoadFromFile(CFileSystem::GetInstance()->GetPathToResourceFile("res/tex/grass_diff.png"));
-    ITexture *diffuseTexture = renderDevice->CreateTexture2D(&diff_tex_data, eTEXTUREFILTER_NEAREST, eTEXTUREWRAP_REPEAT);
-    
-    //STextureData2D hg_tex_data = STextureData2D::LoadFromFile(CFileSystem::GetInstance()->GetPathToResourceFile("res/tex/highgrass_diff.png"));
-    //ITexture *highgrassTexture = renderDevice->CreateTexture2D(&hg_tex_data, eTEXTUREFILTER_NEAREST, eTEXTUREWRAP_REPEAT);
-    
-    STextureDataCubeMap cb_dat = STextureDataCubeMap::LoadFromFile(CFileSystem::GetInstance()->GetPathToResourceFile("res/oceanSkybox.png"), true);
-    ITexture *cubeMap = renderDevice->CreateTextureCubeMap(&cb_dat, eTEXTUREFILTER_NEAREST);
-    
-    //ITexture *rock_diffTexture = LoadTexture(renderDevice, "res/tex/rock_diff.png");
-    
-    CEntityRoot *root = new CEntityRoot(subSystem);
-    
-    /*CMaterial *skyboxMaterial = new CMaterial;
-    skyboxMaterial->SetShader(skyboxShader);
-    skyboxMaterial->SetTexture(eMATERIALTEXTURE_SKYBOX, cubeMap);
+	CEntity *sphere = root->AddChild();
 
-    CEntity *skybox = root->AddChild(g_SkyboxConfigurator, 2, skyboxModel, skyboxMaterial);*/
-/*
-    CEntity *meshEntity = srcEntity->AddChild();
-    meshEntity->GetTransform()->GetTranslation() = { 0, 0, 0 };
-    
-    CMeshFilterExtension *meshFilter = meshEntity->AddExtension<CMeshFilterExtension>();
-    CMeshRendererExtension *meshRenderer = meshEntity->AddExtension<CMeshRendererExtension>();
-    
-    meshFilter->SetModel(sphereModel);
-    
-    SMaterial mat;
-    mat.shader = shader;
-    mat.textureScale = { 8, 8 };
-    mat.SetTexture(eMATERIALTEXTURE_DIFFUSE, diffuseTexture);
-    mat.SetTexture(eMATERIALTEXTURE_SKYBOX, cubeMap);
+	CCamera *camera = new CCamera();
+	camera->SetViewport(0, 0, g_subSystem->GetDisplay()->GetWidth(), g_subSystem->GetDisplay()->GetHeight());
+	camera->SetPerspectiveProjection(DEG2RAD(70.0f), camera->GetViewport()->GetAspectRatio(), 0.01f, 100.0f);
+	camera->GetTransform()->SetTranslation({ 0, 0, -5 });
+//	camera->GetTransform()->SetRotation(SQuaternion::CreateEuler(0, 0, 0));
 
-    meshRenderer->GetMaterials()[0] = mat;
-    */
-/*
-    CEntity *meshEntity2 = meshEntity->AddChild();
-    meshEntity2->GetTransform()->GetTranslation() = { 2, 0, 0 };
-    
-    CMeshFilterExtension *meshFilter2 = meshEntity2->AddExtension<CMeshFilterExtension>();
-    CMeshRendererExtension *meshRenderer2 = meshEntity2->AddExtension<CMeshRendererExtension>();
-    
-    meshFilter2->SetModel(sphereModel);
-    
-    meshRenderer2->GetMaterials()[0] = mat;*/
+	CSkybox *skybox = new CSkybox(cubeMap);
+	CSkyboxClearMethod *skyboxClearMethod = new CSkyboxClearMethod(skybox);
 
-    /*CEntity *planet = root->AddChild();
-    planet->GetTransform()->GetTranslation() = { 0, 0, 0 };
-    
-    CPlanetExtension *planetExtension = planet->AddExtension<CPlanetExtension>(1, 5.0f);
-    
-    CMaterial grassMaterial;
-    grassMaterial.SetShader(shader);
-    grassMaterial.SetTextureScale({ 8, 8 });
-    grassMaterial.SetTexture(eMATERIALTEXTURE_DIFFUSE, diffuseTexture);
-    
-    planetExtension->AddLayer(grassMaterial);
-    
-    CMaterial highgrassMaterial;
-    highgrassMaterial.AddShaderPass(terrainGrassPass1);
-    highgrassMaterial.AddShaderPass(terrainGrassPass2);
-    highgrassMaterial.SetTexture(eMATERIALTEXTURE_DIFFUSE, highgrassTexture);
-    
-    CIndexedModel highgrassModel = CIndexedModel::LoadFromFile(CFileSystem::GetInstance()->GetPathToResourceFile("res/model/highgrass.obj"))[0];
-    CPlanetDetailMap *highgrassDetailMap = CPlanetDetailMap::CreateFromIndexedModel(highgrassModel, highgrassMaterial, planetExtension);
-    
-    planetExtension->AddDetailMap(highgrassDetailMap);*/
-    
-    /*SMaterial rockMaterial;
-    rockMaterial.SetShader(shader);
-    rockMaterial.SetTexture(eMATERIALTEXTURE_DIFFUSE, rock_diffTexture);
-    
-    CIndexedModel rockModel = CIndexedModel::LoadFromFile(CFileSystem::GetInstance()->GetPathToResourceFile("res/model/rock.obj"))[0];
-    CPlanetDetailMap *rockDetailMap = CPlanetDetailMap::CreateFromIndexedModel(rockModel, rockMaterial, planetExtension);
-    
-    planetExtension->AddDetailMap(rockDetailMap);*/
-    
-    CEntity *sphere = root->AddChild();
-    
-    CCamera *camera = new CCamera();
-    camera->SetViewport(0, 0, display->GetWidth(), display->GetHeight());
-    camera->SetPerspectiveProjection(DEG2RAD(70.0f), camera->GetViewport()->GetAspectRatio(), 0.01f, 100.0f);
-    camera->GetTransform()->SetTranslation({ 0, 0, -5 });
-    camera->GetTransform()->SetRotation(SQuaternion::CreateEuler(0, 0, 0));
-    
-    CSkybox *skybox = new CSkybox(subSystem->GetRenderDevice(), cubeMap);
-    CSkyboxClearMethod *skyboxClearMethod = new CSkyboxClearMethod(skybox);
-    
-    camera->SetClearMethod(skyboxClearMethod);
-    
-    root->AddCamera(camera);
-    
-    /*CCamera *camera2 = new CCamera();
-    camera2->SetViewport(display->GetWidth() >> 1, 0, display->GetWidth() >> 1, display->GetHeight());
-    camera2->SetPerspectiveProjection(DEG2RAD(70.0f), camera->GetViewport()->GetAspectRatio(), 0.01f, 100.0f);
-    camera2->GetTransform()->SetTranslation({ 0, 0, -5 });
-    camera2->GetTransform()->SetRotation(SQuaternion::CreateEuler(0, 0, 0));
-    
-    camera2->SetClearMethod(skyboxClearMethod);
-    
-    root->AddCamera(camera2);*/
-    
- /*   srand(SDL_GetTicks());
-    test_vertex *vertexBuffer = (test_vertex *)sphereModel->MapBuffer(eBUFFERTYPE_VERTEXBUFFER);
-    for(int i=0; i<1; ++i) {
-        int r = (rand()%rawSphereModel.GetVertexCount());
-        vertexBuffer[r].x*=2.0f;
-        vertexBuffer[r].y*=2.0f;
-        vertexBuffer[r].z*=2.0f;
-    }
-    sphereModel->UnmapBuffer(eBUFFERTYPE_VERTEXBUFFER);*/
-    
-    IVertexArray *sphereMesh = renderDevice->CreateVertexArray(&CIndexedModel::LoadFromFile(g_FileSys->GetPathToResourceFile("res/sphere.obj"))[0]);
-    
-    CMaterial *sphereMaterial = new CMaterial;
-    sphereMaterial->SetShader(shader);
-    
-    CMeshRendererExtension *meshRenderer = sphere->AddExtension<CMeshRendererExtension>();
-    
-    meshRenderer->SetModel(sphereMesh);
-    meshRenderer->SetMaterial(sphereMaterial);
-    
-    printf("%p\n", sphereMaterial);
+	camera->SetClearMethod(skyboxClearMethod);
 
-    while (subSystem->Update())
-    {
-        //camera->GetTransform()->SetRotation(SQuaternion::CreateEuler(SDL_GetTicks() * 0.001f, 0, 0));
-        
-        root->Update();
-        
-        static SVector2_i32 lastMousePos = subSystem->GetInputDevice()->GetMousePosition();
-        
-        SVector2_i32 mousePos = subSystem->GetInputDevice()->GetMousePosition();
-        SVector2_i32 deltaPos = mousePos - lastMousePos;
-        lastMousePos = mousePos;
-        
-        auto v = camera->GetTransform()->GetRotation().GetRight();
-        //printf("%f %f %f\n", v.x, v.y, v.z);
-        
-        camera->GetTransform()->Rotate(SQuaternion::CreateAxisRotation({ 0, 1, 0 }, DEG2RAD(-deltaPos.x * 0.1f)));
-        camera->GetTransform()->Rotate(SQuaternion::CreateAxisRotation(camera->GetTransform()->GetRotation().GetRight(), DEG2RAD(-deltaPos.y * 0.1f)));
-        
-        renderDevice->BeginFrame();
-        
-        root->Render();
-        
-        renderDevice->EndFrame();
-        renderContext->SwapBuffers();
-    }
-    
-    //CPlanetDetailMap::ReleasePlanetDetailMap(rockDetailMap);
-    //CPlanetDetailMap::ReleasePlanetDetailMap(highgrassDetailMap);
-    delete skyboxClearMethod;
-    delete skybox;
-    delete root;
-    //delete camera2;
-    delete camera;
-    delete sphereMaterial;
-    //delete skyboxMaterial;
-    //renderDevice->ReleaseTexture(rock_diffTexture);
-    renderDevice->ReleaseVertexArray(sphereMesh);
-    renderDevice->ReleaseTexture(cubeMap);
-    //renderDevice->ReleaseVertexArray(sphereModel);
-    renderDevice->ReleaseTexture(diffuseTexture);
-    //renderDevice->ReleaseShaderProgram(skyboxShader);
-    //renderDevice->ReleaseVertexArray(skyboxModel);
-    //renderDevice->ReleaseShaderProgram(terrainGrassPass2);
-    //renderDevice->ReleaseShaderProgram(terrainGrassPass1);
-    renderDevice->ReleaseShaderProgram(shader);
-    
-    subSystem->Release();
-    delete subSystem;
+	root->AddCamera(camera);
 
-    /*SDL_GL_DeleteContext(context);
-    SDL_DestroyWindow(window);
-    
-    SDL_Quit();*/
+	IVertexArray *sphereMesh = g_subSystem->GetRenderDevice()->CreateVertexArray(&CIndexedModel::LoadFromFile(g_FileSys->GetPathToResourceFile("res/sphere.obj"))[0]);
+
+	CMaterial *sphereMaterial = new CMaterial;
+	sphereMaterial->SetShader(shader);
+
+	CMeshRendererExtension *meshRenderer = sphere->AddExtension<CMeshRendererExtension>();
+
+	meshRenderer->SetModel(sphereMesh);
+	meshRenderer->SetMaterial(sphereMaterial);
+
+	bool inGame = false;
+
+	while (g_subSystem->Update())
+	{
+		root->Update();
+
+		if (!inGame && g_subSystem->GetInputDevice()->IsMouseButtonDown(eMOUSEBUTTON_LEFT))
+		{
+			inGame = true;
+			g_subSystem->GetInputDevice()->SetMouseCurserLocked(true);
+		}
+
+		if (inGame && (g_subSystem->GetInputDevice()->IsKeyDown(eKEY_ESCAPE) || !g_subSystem->GetDisplay()->HasFocus()))
+		{
+			inGame = false;
+			g_subSystem->GetInputDevice()->SetMouseCurserLocked(false);
+		}
+
+		if (inGame)
+		{
+			SVector2_i32 deltaPos = g_subSystem->GetInputDevice()->GetMouseMotion();
+			
+			camera->GetTransform()->Rotate(SQuaternion::CreateAxisRotation({ 0, 1, 0 }, DEG2RAD(-deltaPos.x * 0.1f)));
+			camera->GetTransform()->Rotate(SQuaternion::CreateAxisRotation(camera->GetTransform()->GetRotation().GetRight(), DEG2RAD(-deltaPos.y * 0.1f)));
+		}
+
+		g_subSystem->GetRenderDevice()->BeginFrame();
+		root->Render();
+		g_subSystem->GetRenderDevice()->EndFrame();
+
+		g_subSystem->GetRenderContext()->SwapBuffers();
+	}
+
+	delete skyboxClearMethod;
+	delete skybox;
+	delete root;
+	delete camera;
+	delete sphereMaterial;
+	g_subSystem->GetRenderDevice()->ReleaseVertexArray(sphereMesh);
+	g_subSystem->GetRenderDevice()->ReleaseTexture(cubeMap);
+	g_subSystem->GetRenderDevice()->ReleaseTexture(diffuseTexture);
+	g_subSystem->GetRenderDevice()->ReleaseShaderProgram(shader);
+
+	g_subSystem->Release();
+	delete g_subSystem;
     
     return 0;
 }

@@ -16,13 +16,12 @@ class CCamera;
 class CSkybox
 {
 public:
-    CSkybox(IRenderDevice *renderDevice, ITexture *cubeMapTexture);
+    CSkybox(ITexture *cubeMapTexture);
     ~CSkybox();
     
     void Render(CCamera *camera);
     
 private:
-    IRenderDevice *m_renderDevice { nullptr };
     ITexture *m_cubeMapTexture { nullptr };
     
     static int s_referenceCounter;

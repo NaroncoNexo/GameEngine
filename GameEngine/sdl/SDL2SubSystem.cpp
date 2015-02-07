@@ -77,8 +77,17 @@ void CSDL2SubSystem::Release()
 	SDL_Quit();
 }
 
+const std::map<Uint8, int> g_SDLMouseButtonToMouseButton =
+{
+	{ SDL_BUTTON_LEFT,   eMOUSEBUTTON_LEFT },
+	{ SDL_BUTTON_RIGHT,  eMOUSEBUTTON_RIGHT },
+	{ SDL_BUTTON_MIDDLE, eMOUSEBUTTON_MIDDLE }
+};
+
 bool CSDL2SubSystem::Update()
 {
+	SDL_PumpEvents();
+
     m_timer->Update();
     m_inputDevice->Update();
     
@@ -89,6 +98,36 @@ bool CSDL2SubSystem::Update()
         {
             case SDL_QUIT:
                 return false;
+
+			case SDL_KEYDOWN:
+				m_inputDevice->SetKey(event.key.keysym.scancode, true);
+				break;
+
+			case SDL_KEYUP:
+				m_inputDevice->SetKey(event.key.keysym.scancode, false);
+				break;
+
+			case SDL_MOUSEBUTTONDOWN:
+				m_inputDevice->SetMouseButton(g_SDLMouseButtonToMouseButton.at(event.button.button), true);
+				break;
+
+			case SDL_MOUSEBUTTONUP:
+				m_inputDevice->SetMouseButton(g_SDLMouseButtonToMouseButton.at(event.button.button), false);
+				break;
+
+			case SDL_WINDOWEVENT:
+				switch (event.window.event)
+				{
+				case SDL_WINDOWEVENT_FOCUS_GAINED:
+					m_window->SetHasFocus(true);
+					break;
+
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+					m_window->SetHasFocus(false);
+					break;
+				}
+
+				break;
         }
 	}
 	

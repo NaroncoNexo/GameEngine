@@ -87,13 +87,13 @@ public:
     inline SVector2 GetTextureOffset() const { return m_textureOffset; }
     inline SVector2 GetTextureScale() const { return m_textureScale; }
     
-    inline SMatrix4 GetTextureMatrix() const { return { m_textureScale.x, 0, 0, m_textureOffset.x, 0, m_textureScale.y, 0, m_textureOffset.y, 0, 0, 1, 0, 0, 0, 0, 1 }; }
+	inline SMatrix4 GetTextureMatrix() const { return { m_textureScale.x, 0, 0, m_textureOffset.x, 0, m_textureScale.y, 0, m_textureOffset.y, 0, 0, 1, 0, 0, 0, 0, 1 }; }
     
 private:
     std::vector<IShaderProgram *> m_shaderPasses;
     std::map<std::string, SColor> m_colors;
     std::map<std::string, SMaterialTexture> m_textures;
-    SVector2 m_textureOffset{0,0}, m_textureScale{1,1};
+	SVector2 m_textureOffset{ 0, 0 }, m_textureScale{ 1, 1 };
 };
 
 #endif

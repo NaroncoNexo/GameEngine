@@ -10,14 +10,14 @@
 #define __3DGameEngine__OGL3Texture__
 
 #include <ITexture.h>
-#include <OpenGL/gl3.h>
 
-//int width, int height, const Pixel_t *data, int filter, int wrap
+typedef unsigned int GLuint, GLenum;
+
 class COGL3Texture : public ITexture
 {
 public:
-	COGL3Texture(const STextureData2D *data, int filter, int wrap); // Texture2D
-	COGL3Texture(const STextureDataCubeMap *data, int filter); // TextureCubeMap
+	COGL3Texture(const STextureData2D &data, int filter, int wrap); // Texture2D
+	COGL3Texture(const STextureDataCubeMap &data, int filter); // TextureCubeMap
 	~COGL3Texture();
 
 	virtual void Bind(int textureSlot) const;

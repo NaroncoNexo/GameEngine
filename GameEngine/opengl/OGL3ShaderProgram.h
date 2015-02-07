@@ -10,8 +10,9 @@
 #define __3DGameEngine__OGL3ShaderProgram__
 
 #include <IShaderProgram.h>
-#include <OpenGL/gl3.h>
 #include "OGL3Shader.h"
+
+typedef unsigned int GLuint, GLenum;
 
 struct SOGL3Uniform
 {

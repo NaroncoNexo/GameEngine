@@ -7,6 +7,7 @@
 //
 
 #include "OGL3Shader.h"
+#include "OGL3.h"
 #include <map>
 #include <iostream>
 
@@ -35,14 +36,16 @@ COGL3Shader::COGL3Shader(int shaderType, const std::string &sourceCode)
         int maxLength = 0;
         glGetShaderiv(m_GLShader, GL_INFO_LOG_LENGTH, &maxLength);
         
-        char errorLog[maxLength];
+		char *errorLog = (char *)malloc(maxLength);
         glGetShaderInfoLog(m_GLShader, maxLength, &maxLength, errorLog);
         
         glDeleteShader(m_GLShader);
         
         std::cerr << "SHADER: Error compiling shader" << std::endl;
         std::cerr << errorLog << std::endl;
-    }
+		
+		free(errorLog);
+	}
 }
 
 COGL3Shader::~COGL3Shader()

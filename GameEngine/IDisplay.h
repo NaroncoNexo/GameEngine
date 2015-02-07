@@ -23,11 +23,12 @@ public:
 	virtual void SetHeight(int height) = 0;
 	virtual void SetSize(int width, int height) = 0;
 
-	virtual void SetSize(const SVector2 &size) { SetSize(size.x, size.y); }
+	virtual void SetSize(const SVector2_i32 &size) { SetSize(size.x, size.y); }
 
 	virtual std::string GetTitle() const = 0;
 	virtual int GetWidth() const = 0;
 	virtual int GetHeight() const = 0;
+	virtual bool HasFocus() const = 0;
 };
 
 #endif

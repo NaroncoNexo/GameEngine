@@ -7,6 +7,7 @@
 //
 
 #include "OGL3Texture.h"
+#include "OGL3.h"
 #include <map>
 
 const std::map<int, GLenum> GLFilterLookup =
@@ -23,7 +24,7 @@ const std::map<int, GLenum> GLWrapLookup =
 	{ eTEXTUREWRAP_CLAMPTOBORDER, GL_CLAMP_TO_BORDER }
 };
 
-COGL3Texture::COGL3Texture(const STextureData2D *data, int filter, int wrap)
+COGL3Texture::COGL3Texture(const STextureData2D &data, int filter, int wrap)
 {
 	m_type = GL_TEXTURE_2D;
 
@@ -34,15 +35,15 @@ COGL3Texture::COGL3Texture(const STextureData2D *data, int filter, int wrap)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GLFilterLookup.at(filter));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GLFilterLookup.at(filter));
     
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GLWrapLookup.at(wrap));
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GLWrapLookup.at(wrap));
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLfloat)GLWrapLookup.at(wrap));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLfloat)GLWrapLookup.at(wrap));
     
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data->width, data->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data->pixels[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.width, data.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.pixels[0]);
     
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-COGL3Texture::COGL3Texture(const STextureDataCubeMap *data, int filter)
+COGL3Texture::COGL3Texture(const STextureDataCubeMap &data, int filter)
 {
 	m_type = GL_TEXTURE_CUBE_MAP;
 
@@ -59,7 +60,7 @@ COGL3Texture::COGL3Texture(const STextureDataCubeMap *data, int filter)
     
     for (int i = 0; i < 6; ++i)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, data->width, data->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data->pixels[i][0]);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, data.width, data.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data.pixels[i][0]);
 	}
     
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

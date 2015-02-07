@@ -10,7 +10,6 @@
 #define __3DGameEngine__Entity__
 
 #include "Transform.h"
-#include "ISubSystem.h"
 #include <vector>
 #include <memory>
 #include <functional>
@@ -55,7 +54,6 @@ class CEntity
 {
 public:
     CEntity();
-    CEntity(ISubSystem *subSystem);
     virtual ~CEntity();
 
     void AddChild(CEntity *child);
@@ -119,13 +117,11 @@ public:
     SMatrix4 GetTransformationMatrix() const;
     
     inline CTransform *GetTransform() const { return m_transform; }
-    inline ISubSystem *GetSubSystem() const { return m_subSystem; }
     inline CEntity *GetParent() const { return m_parent; }
     inline const std::vector<CEntity *> &GetChildren() const { return m_children; }
     inline bool IsAutoreleasing() const { return m_autoreleasing; }
     
 protected:
-    ISubSystem *m_subSystem { nullptr };
     CTransform *m_transform { nullptr };
     std::vector<CEntity *> m_children;
     std::vector<IEntityExtension *> m_extensions;
@@ -137,7 +133,6 @@ class CEntityRoot : public CEntity
 {
 public:
     CEntityRoot();
-    CEntityRoot(ISubSystem *subSystem);
     virtual ~CEntityRoot();
     
     virtual void Update();

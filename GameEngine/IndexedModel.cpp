@@ -115,13 +115,13 @@ std::vector<CIndexedModel> CIndexedModel::LoadFromFile(const std::string &filena
         return models;
     }
     
-    for (int i = 0; i < pScene->mNumMeshes; ++i)
+    for (int i = 0; i < (int)pScene->mNumMeshes; ++i)
     {
         aiMesh *pMesh = pScene->mMeshes[i];
         
         CIndexedModel model(eDRAWMODE_TRIANGLES);
 
-        for (int j = 0; j < pMesh->mNumVertices; ++j)
+        for (int j = 0; j < (int)pMesh->mNumVertices; ++j)
         {
             aiVector3D pos = pMesh->mVertices[j];
             aiVector3D normal = pMesh->mNormals[j];
@@ -132,7 +132,7 @@ std::vector<CIndexedModel> CIndexedModel::LoadFromFile(const std::string &filena
             model.AddVertex(pos.x, pos.y, pos.z);
         }
 
-        for (int j = 0; j < pMesh->mNumFaces; ++j)
+		for (int j = 0; j < (int)pMesh->mNumFaces; ++j)
         {
             const aiFace &face = pMesh->mFaces[j];
             
